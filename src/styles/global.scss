@@ -1,0 +1,111 @@
+/* Design tokens — dark "tabletop companion" aesthetic.
+   Deep parchment-on-stone palette, warm amber accents, restrained motion. */
+
+:root {
+  /* Surfaces */
+  --c-bg: #0e0d0c;
+  --c-bg-elev-1: #161412;
+  --c-bg-elev-2: #1d1a17;
+  --c-bg-elev-3: #252118;
+  --c-surface-glow: rgba(214, 163, 90, 0.04);
+
+  /* Borders */
+  --c-border: #2a2620;
+  --c-border-strong: #3a342b;
+  --c-border-accent: #d6a35a33;
+
+  /* Text */
+  --c-text: #e8e1d3;
+  --c-text-dim: #9a9285;
+  --c-text-muted: #6b6459;
+  --c-text-faint: #4a443c;
+
+  /* Brand / accent */
+  --c-accent: #d6a35a;
+  --c-accent-soft: #d6a35a22;
+  --c-accent-strong: #f0bc6f;
+
+  /* Semantic */
+  --c-danger: #c9533f;
+  --c-danger-soft: #c9533f22;
+  --c-success: #6b9f5e;
+  --c-warning: #d6a35a;
+  --c-elite: #8a6b2b;
+
+  /* Element colors */
+  --c-fire: #d4583a;
+  --c-ice: #5fa8c9;
+  --c-air: #c9c9b8;
+  --c-earth: #7a5a3a;
+  --c-light: #f0d99a;
+  --c-dark: #6b4f7a;
+
+  /* Spacing */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+
+  /* Radii */
+  --r-sm: 3px;
+  --r-md: 6px;
+  --r-lg: 10px;
+
+  /* Type */
+  --ff-display: 'Cinzel', 'Trajan Pro', 'Playfair Display', Georgia, serif;
+  --ff-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --ff-mono: 'JetBrains Mono', 'SF Mono', Menlo, monospace;
+
+  --fs-xs: 11px;
+  --fs-sm: 12px;
+  --fs-base: 13px;
+  --fs-md: 14px;
+  --fs-lg: 16px;
+  --fs-xl: 20px;
+  --fs-2xl: 28px;
+
+  --transition-fast: 120ms ease-out;
+  --transition-med: 200ms ease-out;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-text);
+  font-family: var(--ff-body);
+  font-size: var(--fs-base);
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  /* Subtle vignette/grain background for tabletop feel */
+  background-image:
+    radial-gradient(circle at 30% 0%, rgba(214, 163, 90, 0.04) 0%, transparent 50%),
+    radial-gradient(circle at 70% 100%, rgba(107, 79, 122, 0.03) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* Cinzel display font — small file, used for monster names and headings */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');

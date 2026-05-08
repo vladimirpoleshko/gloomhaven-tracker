@@ -1,0 +1,153 @@
+<script setup lang="ts">
+import { computed } from 'vue';
+import AbilityCard from './AbilityCard.vue';
+import { useAbilityDecksStore } from '@/stores/abilityDecks';
+
+const props = defineProps<{
+  monsterId: string;
+}>();
+
+const decksStore = useAbilityDecksStore();
+
+const currentCard = computed(() => decksStore.currentCard(props.monsterId));
+const drawPileSize = computed(() => decksStore.drawPileSize(props.monsterId));
+const totalSize = computed(() => decksStore.deckSize(props.monsterId));
+const needsShuffle = computed(() => decksStore.needsShuffle(props.monsterId));
+
+function handleDraw() {
+  decksStore.draw(props.monsterId);
+}
+
+function handleShuffle() {
+  decksStore.shuffleDeck(props.monsterId);
+}
+</script>
+
+<template>
+  <div class="ability-deck">
+    <div class="header">
+      <span class="label">Ability Deck</span>
+      <span class="counter">
+        <span class="remaining">{{ drawPileSize }}</span>
+        <span class="divider">/</span>
+        <span class="total">{{ totalSize }}</span>
+      </span>
+    </div>
+
+    <AbilityCard :card="currentCard" :empty="!currentCard" />
+
+    <div class="controls">
+      <button
+        class="btn btn-primary"
+        :disabled="totalSize === 0"
+        @click="handleDraw"
+      >
+        Draw
+      </button>
+      <button
+        class="btn btn-ghost"
+        :class="{ 'is-pulsing': needsShuffle }"
+        :disabled="totalSize === 0"
+        @click="handleShuffle"
+      >
+        Shuffle
+      </button>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.ability-deck {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .label {
+    font-size: var(--fs-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--c-text-dim);
+    font-weight: 600;
+  }
+
+  .counter {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-xs);
+    color: var(--c-text-muted);
+
+    .remaining {
+      color: var(--c-text);
+    }
+    .divider {
+      margin: 0 2px;
+      color: var(--c-text-faint);
+    }
+  }
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-2);
+}
+
+.btn {
+  border: 1px solid var(--c-border-strong);
+  background: var(--c-bg-elev-2);
+  color: var(--c-text);
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  font-size: var(--fs-sm);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: all var(--transition-fast);
+
+  &:hover:not(:disabled) {
+    border-color: var(--c-accent);
+    background: var(--c-bg-elev-3);
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  &.btn-primary {
+    background: var(--c-accent);
+    border-color: var(--c-accent);
+    color: var(--c-bg);
+    font-weight: 600;
+
+    &:hover:not(:disabled) {
+      background: var(--c-accent-strong);
+      border-color: var(--c-accent-strong);
+    }
+  }
+
+  &.btn-ghost {
+    background: transparent;
+  }
+
+  &.is-pulsing {
+    border-color: var(--c-warning);
+    color: var(--c-warning);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 var(--c-accent-soft);
+  }
+  50% {
+    box-shadow: 0 0 0 4px transparent;
+  }
+}
+</style>

@@ -1,0 +1,129 @@
+{
+  "id": "living-bones",
+  "name": "Living Bones",
+  "maxInstances": 10,
+  "stats": {
+    "0": {
+      "normal": { "hp": 5, "move": 3, "attack": 2 },
+      "elite": { "hp": 8, "move": 3, "attack": 3 }
+    },
+    "1": {
+      "normal": { "hp": 6, "move": 3, "attack": 2 },
+      "elite": { "hp": 9, "move": 3, "attack": 3 }
+    },
+    "2": {
+      "normal": { "hp": 7, "move": 3, "attack": 2 },
+      "elite": { "hp": 11, "move": 3, "attack": 3 }
+    },
+    "3": {
+      "normal": { "hp": 8, "move": 3, "attack": 3 },
+      "elite": { "hp": 12, "move": 3, "attack": 4 }
+    },
+    "4": {
+      "normal": { "hp": 9, "move": 3, "attack": 3 },
+      "elite": { "hp": 14, "move": 3, "attack": 4, "immunities": ["poison"] }
+    },
+    "5": {
+      "normal": { "hp": 10, "move": 3, "attack": 3 },
+      "elite": { "hp": 15, "move": 4, "attack": 5, "immunities": ["poison"] }
+    },
+    "6": {
+      "normal": { "hp": 11, "move": 4, "attack": 4 },
+      "elite": { "hp": 17, "move": 4, "attack": 5, "immunities": ["poison"] }
+    },
+    "7": {
+      "normal": { "hp": 12, "move": 4, "attack": 4 },
+      "elite": { "hp": 18, "move": 4, "attack": 6, "immunities": ["poison"] }
+    }
+  },
+  "abilityDeck": [
+    {
+      "id": "LB-01",
+      "name": "Bone Shield",
+      "initiative": 18,
+      "shuffle": false,
+      "actions": [
+        { "type": "shield", "value": 2, "target": "self" },
+        { "type": "attack", "value": 0 }
+      ]
+    },
+    {
+      "id": "LB-02",
+      "name": "Brittle Charge",
+      "initiative": 32,
+      "shuffle": false,
+      "actions": [
+        { "type": "move", "value": 4 },
+        { "type": "attack", "value": -1 }
+      ]
+    },
+    {
+      "id": "LB-03",
+      "name": "Risen Slash",
+      "initiative": 47,
+      "shuffle": false,
+      "actions": [
+        { "type": "move", "value": 2 },
+        { "type": "attack", "value": 1 }
+      ]
+    },
+    {
+      "id": "LB-04",
+      "name": "Death's Embrace",
+      "initiative": 11,
+      "shuffle": true,
+      "actions": [
+        {
+          "type": "attack",
+          "value": 0,
+          "modifiers": [{ "type": "condition", "condition": "wound" }]
+        }
+      ]
+    },
+    {
+      "id": "LB-05",
+      "name": "Crumbling Strike",
+      "initiative": 60,
+      "shuffle": false,
+      "actions": [
+        { "type": "move", "value": 1 },
+        { "type": "attack", "value": 0, "target": 2 }
+      ]
+    },
+    {
+      "id": "LB-06",
+      "name": "Endless Pursuit",
+      "initiative": 28,
+      "shuffle": false,
+      "actions": [
+        { "type": "move", "value": 5 },
+        { "type": "attack", "value": 0 }
+      ]
+    },
+    {
+      "id": "LB-07",
+      "name": "Withering Touch",
+      "initiative": 71,
+      "shuffle": true,
+      "actions": [
+        { "type": "move", "value": 2 },
+        {
+          "type": "attack",
+          "value": 1,
+          "modifiers": [{ "type": "condition", "condition": "muddle" }]
+        }
+      ]
+    },
+    {
+      "id": "LB-08",
+      "name": "Hollow Stride",
+      "initiative": 6,
+      "shuffle": false,
+      "actions": [
+        { "type": "move", "value": 3 },
+        { "type": "attack", "value": 0 },
+        { "type": "shield", "value": 1, "target": "self" }
+      ]
+    }
+  ]
+}
