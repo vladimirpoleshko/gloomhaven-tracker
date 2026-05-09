@@ -16,10 +16,6 @@ const frontUrl = computed(() =>
 );
 
 const backUrl = computed(() => getAttackModifierBackImage());
-
-const isRotatedCard = computed(() =>
-  currentCard.value?.kind === 'null' || currentCard.value?.kind === 'multiply',
-);
 </script>
 
 <template>
