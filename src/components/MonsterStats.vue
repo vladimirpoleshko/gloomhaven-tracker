@@ -51,18 +51,19 @@ const rotationDeg = computed(() => -((props.level % 4) * 90));
   border-radius: var(--r-md);
   background: var(--c-bg);
   overflow: hidden;
-  width: 400px;
-  height: 400px;
+  width: 100%;
 }
 
 .card-overlay {
   position: absolute;
   left: -1px;
-  bottom: -5px;
+  bottom: 0;
   right: 0;
-  height: 363px;
+  top: 0;
   z-index: 3;
-  background: url(../data/card-cover.png);
+  background: url(../data/card-cover.png) no-repeat;
+  background-size: contain;
+  background-position: 0 100%;
 }
 
 .card-img {

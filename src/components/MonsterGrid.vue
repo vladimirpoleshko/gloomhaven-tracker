@@ -28,12 +28,29 @@ const activeStore = useActiveMonstersStore();
 <style scoped lang="scss">
 .monster-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-auto-rows: minmax(min-content, max-content);
+  grid-auto-flow: column;
+  grid-auto-columns: 320px;
   gap: var(--sp-3);
   padding: var(--sp-4);
   flex: 1;
+  height: 100%;
   align-content: start;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--c-accent);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--c-accent-strong);
+  }
 }
 
 .empty-grid {
