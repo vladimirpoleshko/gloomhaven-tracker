@@ -1,24 +1,15 @@
 /**
  * Monster types for Gloomhaven 1st edition.
  *
- * Levels go 0-7. Each level has separate normal and elite stat blocks.
- * Each monster type has an 8-card ability deck.
+ * Stat cards and ability cards are rendered from image assets.
+ * The app keeps only the minimum data needed for tracking: identity,
+ * which ability deck archetype a monster uses, and which cards in
+ * that deck have the shuffle symbol.
  */
 
 export type MonsterLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 export type Element = 'fire' | 'ice' | 'air' | 'earth' | 'light' | 'dark';
-
-export type MonsterAttribute =
-  | 'flying'
-  | 'shield'
-  | 'retaliate'
-  | 'pierce'
-  | 'pull'
-  | 'push'
-  | 'target'
-  | 'advantage'
-  | 'disadvantage';
 
 /**
  * Conditions monsters can have applied to them.
@@ -36,78 +27,38 @@ export type MonsterCondition =
   | 'strengthen';
 
 /**
- * A single stat block for a monster at a specific level + tier.
- * "attributes" carries values like { shield: 1, retaliate: 2 }.
+ * One playable monster (e.g. "Bandit Archer", "Inox Shaman").
+ *
+ * `id` doubles as the stat-card slug — the stat card images are named
+ * `gh-<id>-0.png` (levels 0-3) and `gh-<id>-4.png` (levels 4-7).
+ *
+ * `abilityArchetype` points to the shared ability deck archetype
+ * (e.g. all archers — bandit, city, inox — share the `archer` deck).
  */
-export interface MonsterStatBlock {
-  hp: number;
-  move: number;
-  attack: number;
-  range?: number;
-  attributes?: Partial<Record<MonsterAttribute, number | true>>;
-  immunities?: MonsterCondition[];
-}
-
-export interface MonsterLevelStats {
-  normal: MonsterStatBlock;
-  elite: MonsterStatBlock;
-}
-
-/**
- * Discriminated union of structured ability actions.
- * Cards usually have multiple actions in sequence.
- * "text" is the escape hatch for anything that doesn't fit cleanly.
- */
-export type AbilityAction =
-  | { type: 'move'; value: number; jumping?: boolean; flying?: boolean }
-  | {
-      type: 'attack';
-      value: number;
-      range?: number;
-      target?: number;
-      aoe?: string;
-      modifiers?: AttackModifier[];
-    }
-  | { type: 'shield'; value: number; target?: 'self' | 'allies'; range?: number }
-  | { type: 'heal'; value: number; target?: 'self' | 'allies'; range?: number }
-  | { type: 'retaliate'; value: number; range?: number; target?: 'self' | 'allies' }
-  | {
-      type: 'condition';
-      condition: MonsterCondition;
-      target?: 'self' | 'enemies' | 'allies';
-      range?: number;
-    }
-  | { type: 'element'; action: 'infuse' | 'consume'; element: Element }
-  | { type: 'summon'; name: string; hp: number; move?: number; attack?: number }
-  | { type: 'text'; value: string };
-
-/**
- * Modifier applied to an attack action — pierce, push, pull, plus condition adds.
- */
-export type AttackModifier =
-  | { type: 'pierce'; value: number }
-  | { type: 'push'; value: number }
-  | { type: 'pull'; value: number }
-  | { type: 'condition'; condition: MonsterCondition }
-  | { type: 'element-infuse'; element: Element }
-  | { type: 'element-consume'; element: Element; effect: string };
-
-export interface AbilityCard {
-  /** Unique within the deck (e.g. "BG-01"). */
-  id: string;
-  name: string;
-  initiative: number;
-  /** True if the shuffle symbol is on this card. */
-  shuffle: boolean;
-  actions: AbilityAction[];
-}
-
 export interface Monster {
   id: string;
   name: string;
-  /** Stats keyed by level 0-7. */
-  stats: Record<MonsterLevel, MonsterLevelStats>;
-  abilityDeck: AbilityCard[];
-  /** Default max instances on the board (10 for standard, 6 for bosses). */
-  maxInstances?: number;
+  abilityArchetype: string;
+}
+
+/**
+ * One ability deck archetype. The 8 cards live as images named
+ * `gh-ma-<abbrev>-1.png` … `-8.png`, plus `-back.png`.
+ * `shuffleCards` lists the card numbers that carry the shuffle symbol.
+ * Empty list = no auto-shuffle prompt for this archetype (DM handles it).
+ */
+export interface AbilityArchetype {
+  id: string;
+  abbrev: string;
+  shuffleCards: number[];
+}
+
+/**
+ * A reference to a single card in an archetype's deck.
+ * Cards are identified by archetype + number; image URLs are
+ * resolved at render time via the manifest helpers.
+ */
+export interface AbilityCardRef {
+  archetypeId: string;
+  number: number;
 }

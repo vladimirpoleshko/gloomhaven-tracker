@@ -9,18 +9,23 @@ export interface MonsterInstance {
   /** Standee number (1-10). Auto-assigned to next free. */
   figureNumber: number;
   tier: 'normal' | 'elite';
+  /**
+   * Free counter the DM ticks up as damage is dealt. Starts at 0,
+   * no max — the stat-card image shows the monster's HP and the DM
+   * decides when the figure is dead.
+   */
   hp: number;
   conditions: MonsterCondition[];
 }
 
 /**
- * State for a monster type's ability deck on the board.
+ * State for a monster's ability deck on the board.
  */
 export interface AbilityDeckState {
-  /** Card ids remaining in the draw pile, in shuffled order. */
-  drawPile: string[];
-  /** Card ids in the discard pile. Most recently drawn = last. */
-  discardPile: string[];
+  /** Card numbers (1-8) remaining in the draw pile, in shuffled order. */
+  drawPile: number[];
+  /** Card numbers in the discard pile. Most recently drawn = last. */
+  discardPile: number[];
   /** Set true when a shuffle symbol is drawn — triggers shuffle at end of round. */
   needsShuffle: boolean;
 }

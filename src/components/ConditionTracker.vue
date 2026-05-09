@@ -3,7 +3,6 @@ import type { MonsterCondition } from '@/types/monster';
 
 defineProps<{
   conditions: MonsterCondition[];
-  immunities?: MonsterCondition[];
 }>();
 
 const emit = defineEmits<{
@@ -24,10 +23,6 @@ const ALL_CONDITIONS: { id: MonsterCondition; label: string; symbol: string }[] 
 function isActive(c: MonsterCondition, conditions: MonsterCondition[]): boolean {
   return conditions.includes(c);
 }
-
-function isImmune(c: MonsterCondition, immunities?: MonsterCondition[]): boolean {
-  return !!immunities?.includes(c);
-}
 </script>
 
 <template>
@@ -36,12 +31,8 @@ function isImmune(c: MonsterCondition, immunities?: MonsterCondition[]): boolean
       v-for="cond in ALL_CONDITIONS"
       :key="cond.id"
       class="cond-btn"
-      :class="{
-        'is-active': isActive(cond.id, conditions),
-        'is-immune': isImmune(cond.id, immunities),
-      }"
-      :title="`${cond.label}${isImmune(cond.id, immunities) ? ' (immune)' : ''}`"
-      :disabled="isImmune(cond.id, immunities)"
+      :class="{ 'is-active': isActive(cond.id, conditions) }"
+      :title="cond.label"
       @click="emit('toggle', cond.id)"
     >
       {{ cond.symbol }}
@@ -78,14 +69,6 @@ function isImmune(c: MonsterCondition, immunities?: MonsterCondition[]): boolean
     background: var(--c-accent);
     color: var(--c-bg);
     border-color: var(--c-accent);
-  }
-
-  &.is-immune {
-    background: transparent;
-    color: var(--c-text-faint);
-    border-style: dashed;
-    cursor: not-allowed;
-    opacity: 0.4;
   }
 }
 </style>

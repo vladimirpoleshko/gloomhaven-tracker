@@ -2,6 +2,12 @@
 import { computed } from 'vue';
 import AbilityCard from './AbilityCard.vue';
 import { useAbilityDecksStore } from '@/stores/abilityDecks';
+import {
+  getMonster,
+  getArchetype,
+  getAbilityCardImage,
+  getAbilityCardBackImage,
+} from '@/data/monsters.index';
 
 const props = defineProps<{
   monsterId: string;
@@ -9,10 +15,26 @@ const props = defineProps<{
 
 const decksStore = useAbilityDecksStore();
 
-const currentCard = computed(() => decksStore.currentCard(props.monsterId));
+const archetype = computed(() => {
+  const monster = getMonster(props.monsterId);
+  if (!monster) return undefined;
+  return getArchetype(monster.abilityArchetype);
+});
+
+const currentNumber = computed(() => decksStore.currentCardNumber(props.monsterId));
 const drawPileSize = computed(() => decksStore.drawPileSize(props.monsterId));
 const totalSize = computed(() => decksStore.deckSize(props.monsterId));
 const needsShuffle = computed(() => decksStore.needsShuffle(props.monsterId));
+
+const frontUrl = computed(() => {
+  if (!archetype.value || currentNumber.value === null) return undefined;
+  return getAbilityCardImage(archetype.value, currentNumber.value);
+});
+
+const backUrl = computed(() => {
+  if (!archetype.value) return undefined;
+  return getAbilityCardBackImage(archetype.value);
+});
 
 function handleDraw() {
   decksStore.draw(props.monsterId);
@@ -34,7 +56,7 @@ function handleShuffle() {
       </span>
     </div>
 
-    <AbilityCard :card="currentCard" :empty="!currentCard" />
+    <AbilityCard :front-url="frontUrl" :back-url="backUrl" />
 
     <div class="controls">
       <button

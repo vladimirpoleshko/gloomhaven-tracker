@@ -19,11 +19,6 @@ const decksStore = useAbilityDecksStore();
 
 const monster = computed(() => getMonster(props.slot.monsterId));
 
-const levelStats = computed(() => {
-  if (!monster.value) return null;
-  return monster.value.stats[scenarioStore.level];
-});
-
 const canSpawnMore = computed(
   () => props.slot.instances.length < MAX_INSTANCES_PER_TYPE
 );
@@ -35,9 +30,7 @@ function toggleSpawnTier() {
 }
 
 function handleSpawn() {
-  if (!levelStats.value) return;
-  const tierStats = levelStats.value[props.slot.spawnTier];
-  activeStore.spawnInstance(props.slot.monsterId, tierStats.hp);
+  activeStore.spawnInstance(props.slot.monsterId);
 }
 
 function handleRemoveBox() {
@@ -50,7 +43,7 @@ decksStore.ensureDeck(props.slot.monsterId);
 </script>
 
 <template>
-  <article v-if="monster && levelStats" class="monster-box">
+  <article v-if="monster" class="monster-box">
     <header class="box-header">
       <div class="title-block">
         <h2 class="title">{{ monster.name }}</h2>
@@ -61,7 +54,7 @@ decksStore.ensureDeck(props.slot.monsterId);
 
     <div class="content">
       <section class="stats-section">
-        <MonsterStats :normal="levelStats.normal" :elite="levelStats.elite" />
+        <MonsterStats :monster="monster" :level="scenarioStore.level" />
       </section>
 
       <section class="deck-section">
