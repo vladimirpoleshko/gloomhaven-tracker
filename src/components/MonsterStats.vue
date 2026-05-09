@@ -28,6 +28,7 @@ const rotationDeg = computed(() => -((props.level % 4) * 90));
         :alt="`${monster.name} stat card, level ${level}`"
       />
       <div v-else class="missing">Stat card image not found</div>
+      <div class="card-overlay" />
     </div>
     <figcaption class="caption">{{ sideLabel }}</figcaption>
   </figure>
@@ -43,8 +44,6 @@ const rotationDeg = computed(() => -((props.level % 4) * 90));
 
 .card-frame {
   position: relative;
-  width: 100%;
-  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -52,6 +51,18 @@ const rotationDeg = computed(() => -((props.level % 4) * 90));
   border-radius: var(--r-md);
   background: var(--c-bg);
   overflow: hidden;
+  width: 400px;
+  height: 400px;
+}
+
+.card-overlay {
+  position: absolute;
+  left: -1px;
+  bottom: -5px;
+  right: 0;
+  height: 363px;
+  z-index: 3;
+  background: url(../data/card-cover.png);
 }
 
 .card-img {

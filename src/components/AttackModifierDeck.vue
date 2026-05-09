@@ -38,7 +38,6 @@ const isRotatedCard = computed(() =>
         v-if="frontUrl"
         :src="frontUrl"
         class="card-img"
-        :class="{ 'is-rotated': isRotatedCard }"
         alt=""
       />
       <img v-else-if="backUrl" :src="backUrl" class="card-img" alt="" />
@@ -146,10 +145,6 @@ const isRotatedCard = computed(() =>
   max-height: 100%;
   object-fit: contain;
   transition: transform var(--transition-med);
-
-  &.is-rotated {
-    transform: rotate(90deg);
-  }
 }
 
 .shuffle-flag {

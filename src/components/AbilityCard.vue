@@ -31,7 +31,6 @@ const src = computed(() => props.frontUrl ?? props.backUrl);
   display: flex;
   align-items: center;
   justify-content: center;
-  aspect-ratio: 5 / 7;
   position: relative;
 }
 

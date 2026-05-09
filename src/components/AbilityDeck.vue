@@ -56,24 +56,27 @@ function handleShuffle() {
       </span>
     </div>
 
-    <AbilityCard :front-url="frontUrl" :back-url="backUrl" />
+    <div class="grid">
+      <AbilityCard :front-url="frontUrl" :back-url="backUrl" />
 
-    <div class="controls">
-      <button
-        class="btn btn-primary"
-        :disabled="totalSize === 0"
-        @click="handleDraw"
-      >
-        Draw
-      </button>
-      <button
-        class="btn btn-ghost"
-        :class="{ 'is-pulsing': needsShuffle }"
-        :disabled="totalSize === 0"
-        @click="handleShuffle"
-      >
-        Shuffle
-      </button>
+      <div class="controls">
+        <button
+          class="btn btn-primary"
+          :disabled="totalSize === 0"
+          @click="handleDraw"
+        >
+          Draw Card
+        </button>
+        <button
+          class="btn btn-ghost"
+          :class="{ 'is-pulsing': needsShuffle }"
+          :disabled="totalSize === 0"
+          @click="handleShuffle"
+          title="Shuffle deck"
+        >
+          ↻
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -113,10 +116,22 @@ function handleShuffle() {
   }
 }
 
-.controls {
+.grid {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: var(--sp-2);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+
+  .btn-primary {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    margin-bottom: var(--sp-2);
+    flex: 1;
+  }
 }
 
 .btn {
