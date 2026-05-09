@@ -2,36 +2,48 @@ import type { AttackModifierCard } from '@/types/deck';
 
 /**
  * Build the standard 20-card attack modifier deck.
- *  6× +0
- *  5× +1
- *  5× -1
- *  1× +2
- *  1× -2
- *  1× ×2
- *  1× null
+ *  6× +0   (image 01–06)
+ *  5× +1   (image 07–11)
+ *  5× -1   (image 12–16)
+ *  1× -2   (image 17)
+ *  1× +2   (image 18)
+ *  1× null (image 19)
+ *  1× ×2   (image 20)
  */
 export function buildBaseAttackModifierDeck(): AttackModifierCard[] {
   const cards: AttackModifierCard[] = [];
   let n = 0;
   const nextId = () => `am-${n++}`;
 
-  for (let i = 0; i < 6; i++) cards.push({ id: nextId(), kind: 'plus', value: 0 });
-  for (let i = 0; i < 5; i++) cards.push({ id: nextId(), kind: 'plus', value: 1 });
-  for (let i = 0; i < 5; i++) cards.push({ id: nextId(), kind: 'minus', value: 1 });
-  cards.push({ id: nextId(), kind: 'plus', value: 2 });
-  cards.push({ id: nextId(), kind: 'minus', value: 2 });
-  cards.push({ id: nextId(), kind: 'multiply' });
-  cards.push({ id: nextId(), kind: 'null' });
+  for (let i = 0; i < 6; i++) {
+    cards.push({ id: nextId(), kind: 'plus', value: 0, imageNumber: i + 1 });
+  }
+  for (let i = 0; i < 5; i++) {
+    cards.push({ id: nextId(), kind: 'plus', value: 1, imageNumber: i + 7 });
+  }
+  for (let i = 0; i < 5; i++) {
+    cards.push({ id: nextId(), kind: 'minus', value: 1, imageNumber: i + 12 });
+  }
+  cards.push({ id: nextId(), kind: 'minus', value: 2, imageNumber: 17 });
+  cards.push({ id: nextId(), kind: 'plus', value: 2, imageNumber: 18 });
+  cards.push({ id: nextId(), kind: 'null', imageNumber: 19 });
+  cards.push({ id: nextId(), kind: 'multiply', imageNumber: 20 });
 
   return cards;
 }
 
+/** Bless deck only ships one image. */
+const BLESS_IMAGE_NUMBER = 11;
+/** Curse deck has 10 art variants — pick one at random per card. */
+const CURSE_IMAGE_COUNT = 10;
+
 export function makeBlessCard(): AttackModifierCard {
-  return { id: `bless-${cryptoId()}`, kind: 'bless' };
+  return { id: `bless-${cryptoId()}`, kind: 'bless', imageNumber: BLESS_IMAGE_NUMBER };
 }
 
 export function makeCurseCard(): AttackModifierCard {
-  return { id: `curse-${cryptoId()}`, kind: 'curse' };
+  const imageNumber = 1 + Math.floor(Math.random() * CURSE_IMAGE_COUNT);
+  return { id: `curse-${cryptoId()}`, kind: 'curse', imageNumber };
 }
 
 function cryptoId(): string {

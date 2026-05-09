@@ -32,14 +32,18 @@ export interface AbilityDeckState {
 
 /**
  * Standard attack modifier card. Single shared deck for all monsters.
+ *
+ * `imageNumber` points at the source image:
+ *   plus/minus/multiply/null → ./attack-modifiers/monster/gh-am-m-<NN>.png
+ *   bless/curse              → ./attack-modifiers/monster-mod/gh-am-mm-<NN>.png
  */
 export type AttackModifierCard =
-  | { id: string; kind: 'plus'; value: number } // +0, +1, +2
-  | { id: string; kind: 'minus'; value: number } // -1, -2
-  | { id: string; kind: 'multiply' } // x2 — triggers shuffle
-  | { id: string; kind: 'null' } // null — triggers shuffle
-  | { id: string; kind: 'bless' } // single-use, removed when drawn
-  | { id: string; kind: 'curse' }; // single-use, removed when drawn
+  | { id: string; kind: 'plus'; value: number; imageNumber: number } // +0, +1, +2
+  | { id: string; kind: 'minus'; value: number; imageNumber: number } // -1, -2
+  | { id: string; kind: 'multiply'; imageNumber: number } // x2 — triggers shuffle
+  | { id: string; kind: 'null'; imageNumber: number } // null — triggers shuffle
+  | { id: string; kind: 'bless'; imageNumber: number } // single-use, removed when drawn
+  | { id: string; kind: 'curse'; imageNumber: number }; // single-use, removed when drawn
 
 export interface AttackModifierDeckState {
   drawPile: AttackModifierCard[];
