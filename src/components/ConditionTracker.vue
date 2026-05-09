@@ -35,7 +35,7 @@ function isActive(c: MonsterCondition, conditions: MonsterCondition[]): boolean 
       :title="cond.label"
       @click="emit('toggle', cond.id)"
     >
-      {{ cond.symbol }}
+      <img :src="'/src/data/monster-status/' + cond.id + '.jpg'" :alt="cond.symbol">
     </button>
   </div>
 </template>
@@ -48,7 +48,8 @@ function isActive(c: MonsterCondition, conditions: MonsterCondition[]): boolean 
 }
 
 .cond-btn {
-  width: 100%;
+  width: 32px;
+  height: 32px;
   aspect-ratio: 1;
   font-family: var(--ff-mono);
   font-size: var(--fs-xs);
@@ -69,6 +70,11 @@ function isActive(c: MonsterCondition, conditions: MonsterCondition[]): boolean 
     background: var(--c-accent);
     color: var(--c-bg);
     border-color: var(--c-accent);
+  }
+
+  img {
+    width: 100%;
+    vertical-align: top;
   }
 }
 </style>
