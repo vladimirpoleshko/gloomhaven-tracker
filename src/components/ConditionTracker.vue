@@ -23,6 +23,16 @@ const ALL_CONDITIONS: { id: MonsterCondition; label: string; symbol: string }[] 
 function isActive(c: MonsterCondition, conditions: MonsterCondition[]): boolean {
   return conditions.includes(c);
 }
+
+// img resolver
+const conditionImages = import.meta.glob<string>(
+  '@/data/monster-status/*.jpg',
+  { eager: true, query: '?url', import: 'default' },
+);
+
+function getConditionImage(id: string): string | undefined {
+  return conditionImages[`/src/data/monster-status/${id}.jpg`];
+}
 </script>
 
 <template>
@@ -35,7 +45,7 @@ function isActive(c: MonsterCondition, conditions: MonsterCondition[]): boolean 
       :title="cond.label"
       @click="emit('toggle', cond.id)"
     >
-      <img :src="'/src/data/monster-status/' + cond.id + '.jpg'" :alt="cond.symbol">
+      <img :src="getConditionImage(cond.id)" :alt="cond.symbol">
     </button>
   </div>
 </template>
