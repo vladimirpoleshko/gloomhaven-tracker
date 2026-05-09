@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useAttackModifierStore, MAX_BLESS, MAX_CURSE } from '@/stores/attackModifier';
-import { attackModifierLabel } from '@/utils/attackModifierDeck';
+import {
+  getAttackModifierCardImage,
+  getAttackModifierBackImage,
+} from '@/data/attackModifiers.index';
 import type { AttackModifierCard } from '@/types/deck';
 
 const amStore = useAttackModifierStore();
 
 const currentCard = computed<AttackModifierCard | null>(() => amStore.currentCard);
-const cardLabel = computed(() => (currentCard.value ? attackModifierLabel(currentCard.value) : '—'));
-const cardKind = computed(() => currentCard.value?.kind ?? 'empty');
+
+const frontUrl = computed(() =>
+  currentCard.value ? getAttackModifierCardImage(currentCard.value) : undefined,
+);
+
+const backUrl = computed(() => getAttackModifierBackImage());
+
+const isRotatedCard = computed(() =>
+  currentCard.value?.kind === 'null' || currentCard.value?.kind === 'multiply',
+);
 </script>
 
 <template>
@@ -22,8 +33,15 @@ const cardKind = computed(() => currentCard.value?.kind ?? 'empty');
       </span>
     </div>
 
-    <div class="card-display" :class="`kind-${cardKind}`">
-      <span class="card-text">{{ cardLabel }}</span>
+    <div class="card-frame">
+      <img
+        v-if="frontUrl"
+        :src="frontUrl"
+        class="card-img"
+        :class="{ 'is-rotated': isRotatedCard }"
+        alt=""
+      />
+      <img v-else-if="backUrl" :src="backUrl" class="card-img" alt="" />
       <span v-if="amStore.needsShuffle" class="shuffle-flag" title="Shuffle at end of round">↻</span>
     </div>
 
@@ -110,49 +128,38 @@ const cardKind = computed(() => currentCard.value?.kind ?? 'empty');
   }
 }
 
-.card-display {
-  background: linear-gradient(180deg, var(--c-bg-elev-2) 0%, var(--c-bg-elev-1) 100%);
+.card-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 600 / 391;
+  background: var(--c-bg);
   border: 1px solid var(--c-border-strong);
   border-radius: var(--r-md);
-  padding: var(--sp-4);
-  min-height: 90px;
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;
+}
 
-  .card-text {
-    font-family: var(--ff-display);
-    font-size: var(--fs-2xl);
-    font-weight: 700;
-    color: var(--c-text);
-    letter-spacing: 0.04em;
-  }
+.card-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  transition: transform var(--transition-med);
 
-  .shuffle-flag {
-    position: absolute;
-    top: var(--sp-2);
-    right: var(--sp-2);
-    color: var(--c-warning);
-    font-size: var(--fs-md);
-    font-weight: 700;
+  &.is-rotated {
+    transform: rotate(90deg);
   }
+}
 
-  &.kind-multiply .card-text {
-    color: var(--c-accent-strong);
-  }
-
-  &.kind-null .card-text {
-    color: var(--c-danger);
-  }
-
-  &.kind-bless .card-text {
-    color: var(--c-light);
-  }
-
-  &.kind-curse .card-text {
-    color: var(--c-dark);
-  }
+.shuffle-flag {
+  position: absolute;
+  top: var(--sp-2);
+  right: var(--sp-2);
+  color: var(--c-warning);
+  font-size: var(--fs-md);
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 .primary-controls {
