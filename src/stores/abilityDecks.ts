@@ -1,17 +1,16 @@
 import { defineStore } from 'pinia';
 import type { AbilityDeckState } from '@/types/deck';
-import type { AbilityCard } from '@/types/monster';
-import { getMonster } from '@/data/monsters.index';
+import { getMonster, getArchetype, DECK_CARD_NUMBERS } from '@/data/monsters.index';
 import { shuffle } from '@/utils/shuffle';
 
 interface AbilityDecksState {
-  /** keyed by monster id */
+  /** Keyed by monster id (one deck per active monster slot in the grid). */
   decks: Record<string, AbilityDeckState>;
 }
 
-function freshDeck(cards: AbilityCard[]): AbilityDeckState {
+function freshDeck(): AbilityDeckState {
   return {
-    drawPile: shuffle(cards.map((c) => c.id)),
+    drawPile: shuffle([...DECK_CARD_NUMBERS]),
     discardPile: [],
     needsShuffle: false,
   };
@@ -22,26 +21,12 @@ export const useAbilityDecksStore = defineStore('abilityDecks', {
     decks: {},
   }),
   getters: {
-    /**
-     * The id of the most recently drawn card (top of discard), or null.
-     */
-    currentCardId: (s) => (monsterId: string): string | null => {
+    /** The most recently drawn card number, or null. */
+    currentCardNumber: (s) => (monsterId: string): number | null => {
       const d = s.decks[monsterId];
       if (!d || d.discardPile.length === 0) return null;
       return d.discardPile[d.discardPile.length - 1] ?? null;
     },
-
-    /** Resolved AbilityCard object for the current top of discard. */
-    currentCard:
-      (s) =>
-      (monsterId: string): AbilityCard | null => {
-        const d = s.decks[monsterId];
-        if (!d || d.discardPile.length === 0) return null;
-        const monster = getMonster(monsterId);
-        if (!monster) return null;
-        const id = d.discardPile[d.discardPile.length - 1];
-        return monster.abilityDeck.find((c) => c.id === id) ?? null;
-      },
 
     needsShuffle: (s) => (monsterId: string): boolean =>
       s.decks[monsterId]?.needsShuffle ?? false,
@@ -59,17 +44,16 @@ export const useAbilityDecksStore = defineStore('abilityDecks', {
     /** Idempotent — only initializes if not already present. */
     ensureDeck(monsterId: string) {
       if (this.decks[monsterId]) return;
-      const monster = getMonster(monsterId);
-      if (!monster) return;
-      this.decks[monsterId] = freshDeck(monster.abilityDeck);
+      if (!getMonster(monsterId)) return;
+      this.decks[monsterId] = freshDeck();
     },
 
     /**
      * Draw the top of the draw pile into the discard pile.
      * If the drawn card has the shuffle symbol, mark needsShuffle.
-     * If draw pile is empty (shouldn't happen pre-shuffle), reshuffle first.
+     * If the draw pile is empty, reshuffle first.
      */
-    draw(monsterId: string): AbilityCard | null {
+    draw(monsterId: string): number | null {
       this.ensureDeck(monsterId);
       const d = this.decks[monsterId];
       const monster = getMonster(monsterId);
@@ -79,27 +63,28 @@ export const useAbilityDecksStore = defineStore('abilityDecks', {
         this.shuffleDeck(monsterId);
       }
 
-      const cardId = d.drawPile.shift();
-      if (!cardId) return null;
-      d.discardPile.push(cardId);
+      const cardNumber = d.drawPile.shift();
+      if (cardNumber === undefined) return null;
+      d.discardPile.push(cardNumber);
 
-      const card = monster.abilityDeck.find((c) => c.id === cardId);
-      if (card?.shuffle) d.needsShuffle = true;
-      return card ?? null;
+      const archetype = getArchetype(monster.abilityArchetype);
+      if (archetype?.shuffleCards.includes(cardNumber)) {
+        d.needsShuffle = true;
+      }
+      return cardNumber;
     },
 
     /** Reshuffle: combine discard + draw, clear needsShuffle. */
     shuffleDeck(monsterId: string) {
       const d = this.decks[monsterId];
-      const monster = getMonster(monsterId);
-      if (!d || !monster) return;
+      if (!d) return;
       const all = [...d.drawPile, ...d.discardPile];
       d.drawPile = shuffle(all);
       d.discardPile = [];
       d.needsShuffle = false;
     },
 
-    /** Drop a deck — used when a monster is removed from grid. */
+    /** Drop a deck — used when a monster is removed from the grid. */
     removeDeck(monsterId: string) {
       delete this.decks[monsterId];
     },

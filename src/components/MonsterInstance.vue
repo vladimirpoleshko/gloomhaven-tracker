@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import type { MonsterCondition } from '@/types/monster';
 import type { MonsterInstance } from '@/types/deck';
 import { useActiveMonstersStore } from '@/stores/activeMonsters';
-import { useScenarioStore } from '@/stores/scenario';
-import { getMonster } from '@/data/monsters.index';
 import ConditionTracker from './ConditionTracker.vue';
 
 const props = defineProps<{
@@ -13,30 +10,13 @@ const props = defineProps<{
 }>();
 
 const activeStore = useActiveMonstersStore();
-const scenarioStore = useScenarioStore();
-
-const stats = computed(() => {
-  const monster = getMonster(props.monsterId);
-  if (!monster) return null;
-  return monster.stats[scenarioStore.level][props.instance.tier];
-});
-
-const maxHp = computed(() => stats.value?.hp ?? 1);
-const immunities = computed(() => stats.value?.immunities);
-
-const isDead = computed(() => props.instance.hp <= 0);
-
-const hpPercent = computed(() => {
-  if (!maxHp.value) return 0;
-  return Math.max(0, Math.min(100, (props.instance.hp / maxHp.value) * 100));
-});
 
 function decrementHp() {
-  activeStore.adjustInstanceHp(props.monsterId, props.instance.id, -1, maxHp.value);
+  activeStore.adjustInstanceHp(props.monsterId, props.instance.id, -1);
 }
 
 function incrementHp() {
-  activeStore.adjustInstanceHp(props.monsterId, props.instance.id, +1, maxHp.value);
+  activeStore.adjustInstanceHp(props.monsterId, props.instance.id, +1);
 }
 
 function handleToggleCondition(c: MonsterCondition) {
@@ -49,10 +29,7 @@ function handleRemove() {
 </script>
 
 <template>
-  <div
-    class="monster-instance"
-    :class="{ 'is-elite': instance.tier === 'elite', 'is-dead': isDead }"
-  >
+  <div class="monster-instance" :class="{ 'is-elite': instance.tier === 'elite' }">
     <div class="row">
       <div class="figure">
         <span class="num">{{ instance.figureNumber }}</span>
@@ -62,16 +39,10 @@ function handleRemove() {
       <div class="hp-controls">
         <button class="hp-btn" :disabled="instance.hp <= 0" @click="decrementHp">−</button>
         <div class="hp-display">
-          <div class="hp-bar">
-            <div class="hp-bar-fill" :style="{ width: `${hpPercent}%` }" />
-          </div>
-          <div class="hp-text">
-            <span class="hp-current">{{ instance.hp }}</span>
-            <span class="hp-divider">/</span>
-            <span class="hp-max">{{ maxHp }}</span>
-          </div>
+          <span class="hp-label">HP</span>
+          <span class="hp-value">{{ instance.hp }}</span>
         </div>
-        <button class="hp-btn" :disabled="instance.hp >= maxHp" @click="incrementHp">+</button>
+        <button class="hp-btn" @click="incrementHp">+</button>
       </div>
 
       <button class="remove-btn" title="Remove instance" @click="handleRemove">×</button>
@@ -79,7 +50,6 @@ function handleRemove() {
 
     <ConditionTracker
       :conditions="instance.conditions"
-      :immunities="immunities"
       @toggle="handleToggleCondition"
     />
   </div>
@@ -98,17 +68,6 @@ function handleRemove() {
 
   &.is-elite {
     border-left: 3px solid var(--c-elite);
-  }
-
-  &.is-dead {
-    opacity: 0.45;
-    background: repeating-linear-gradient(
-      135deg,
-      var(--c-bg-elev-1),
-      var(--c-bg-elev-1) 4px,
-      var(--c-bg) 4px,
-      var(--c-bg) 8px
-    );
   }
 }
 
@@ -150,8 +109,8 @@ function handleRemove() {
 }
 
 .hp-btn {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: var(--r-sm);
   background: var(--c-bg-elev-2);
   border: 1px solid var(--c-border-strong);
@@ -175,44 +134,30 @@ function handleRemove() {
 }
 
 .hp-display {
-  position: relative;
-  height: 22px;
-}
-
-.hp-bar {
-  position: absolute;
-  inset: 0;
-  background: var(--c-bg-elev-2);
-  border-radius: var(--r-sm);
-  overflow: hidden;
-  border: 1px solid var(--c-border);
-}
-
-.hp-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--c-danger), var(--c-accent));
-  transition: width var(--transition-med);
-}
-
-.hp-text {
-  position: absolute;
-  inset: 0;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: center;
-  font-family: var(--ff-mono);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  color: var(--c-text);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  gap: 6px;
+  height: 24px;
+  background: var(--c-bg-elev-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--r-sm);
+  padding: 0 var(--sp-2);
 
-  .hp-divider {
-    margin: 0 2px;
-    color: var(--c-text-dim);
+  .hp-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--c-text-faint);
+    font-weight: 600;
   }
 
-  .hp-max {
-    color: var(--c-text-dim);
+  .hp-value {
+    font-family: var(--ff-mono);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    color: var(--c-text);
+    line-height: 24px;
   }
 }
 

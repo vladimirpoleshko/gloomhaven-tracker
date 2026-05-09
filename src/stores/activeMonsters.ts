@@ -63,8 +63,9 @@ export const useActiveMonstersStore = defineStore('activeMonsters', {
     /**
      * Spawn a new instance using the current spawnTier.
      * Auto-assigns the next free figure number 1..MAX_INSTANCES_PER_TYPE.
+     * HP starts at 0; the DM ticks it up as damage is taken.
      */
-    spawnInstance(monsterId: string, hp: number): MonsterInstance | null {
+    spawnInstance(monsterId: string): MonsterInstance | null {
       const slot = this.active.find((m) => m.monsterId === monsterId);
       if (!slot) return null;
       if (slot.instances.length >= MAX_INSTANCES_PER_TYPE) return null;
@@ -80,7 +81,7 @@ export const useActiveMonstersStore = defineStore('activeMonsters', {
         id: nextInstanceId(),
         figureNumber,
         tier: slot.spawnTier,
-        hp,
+        hp: 0,
         conditions: [],
       };
       slot.instances.push(inst);
@@ -96,16 +97,10 @@ export const useActiveMonstersStore = defineStore('activeMonsters', {
       if (idx >= 0) slot.instances.splice(idx, 1);
     },
 
-    setInstanceHp(monsterId: string, instanceId: string, hp: number) {
+    adjustInstanceHp(monsterId: string, instanceId: string, delta: number) {
       const slot = this.active.find((m) => m.monsterId === monsterId);
       const inst = slot?.instances.find((i) => i.id === instanceId);
-      if (inst) inst.hp = Math.max(0, hp);
-    },
-
-    adjustInstanceHp(monsterId: string, instanceId: string, delta: number, max: number) {
-      const slot = this.active.find((m) => m.monsterId === monsterId);
-      const inst = slot?.instances.find((i) => i.id === instanceId);
-      if (inst) inst.hp = Math.max(0, Math.min(max, inst.hp + delta));
+      if (inst) inst.hp = Math.max(0, inst.hp + delta);
     },
 
     toggleCondition(monsterId: string, instanceId: string, condition: MonsterCondition) {
